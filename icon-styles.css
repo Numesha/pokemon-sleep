@@ -50,3 +50,24 @@ main{padding-top:12px}
 @media(min-width:900px){#foods{grid-template-rows:76px}.status-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:680px){.shell{padding-left:10px;padding-right:10px}.panel{padding:12px}.settings{padding:9px 12px}.status-row{grid-template-columns:76px minmax(110px,1fr) 64px}.status-row label{flex-direction:row;align-items:center}.filters .section-heading h2{font-size:15px}.filters legend small{font-size:10px;margin-left:4px}.food-source .food-icon{width:60px;height:71px}}
 @media(max-width:350px){#foods{grid-auto-columns:64px}.food-source .food-icon{width:54px;height:64px}.card-top h3{font-size:14px}.sleep-label{font-size:10px;padding:3px 5px}.status-row{grid-template-columns:64px minmax(96px,1fr) 62px;gap:5px}}
+/* Compact island ranking, shared by totals and island/sleep pairs. */
+.island-grid{gap:8px}
+.island-card{padding:10px 12px;border-radius:11px}
+.island-heading{display:flex;align-items:center;gap:7px;min-width:0}
+.island-heading h3{flex:1;font-size:15px;line-height:1.4;min-width:0}
+.rank-badge{font-size:12px;min-width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;background:#e6eee5;color:var(--green);font-weight:750}
+.rank-badge.reference{font-size:10px;background:#eeeae1;color:#726953;padding:0 5px}
+.island-card .count-grid{margin:7px 0 5px;gap:6px}
+.island-card .metric{display:flex;align-items:center;justify-content:center;gap:8px;padding:4px 3px;border-radius:6px}
+.island-card .metric b{font-size:19px;line-height:1.2}
+.island-card .metric span{font-size:11px}
+.island-card details{padding-top:3px;border-top:0}
+.island-card summary{min-height:28px;font-size:11px;color:var(--muted)}
+.island-card .island-pokemon{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0 0;padding:0;list-style:none}
+.island-card .island-pokemon>li{border:1px solid #e4eae1;border-radius:6px;padding:4px 6px;font-size:11px}
+.island-card .island-pokemon .sleep-label{font-size:9px;padding:1px 3px}
+.reference-heading{grid-column:1/-1;padding:12px 2px 0;margin-top:4px;border-top:1px solid var(--line)}
+.reference-heading h3{font-size:14px}
+.reference-heading p{font-size:11px;color:var(--muted);margin:2px 0}
+.reference-card{background:#faf9f4}
+#islands>.hint{font-size:11px;margin:4px 0 10px}

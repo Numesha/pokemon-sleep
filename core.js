@@ -39,5 +39,13 @@ function islands(data,filters,status,excluded){return data.fields.filter(f=>!fil
  const count=list=>Object.fromEntries(['priority','future','temp','done'].map(s=>[s,list.filter(p=>p.compositions.some(c=>c.foods.some(f=>(!filters.foods.length||filters.foods.includes(f))&&(!filters.status||s===filters.status)&&status[f]===s))).length]));
  return {field,pokemon,counts:count(pokemon),details:['うとうと','すやすや','ぐっすり'].map(sleep=>{let list=pokemon.filter(p=>p.sleep===sleep);return {sleep,pokemon:list,counts:count(list)};})};
  }).sort((a,b)=>b.counts.priority-a.counts.priority||b.counts.future-a.counts.future||b.counts.temp-a.counts.temp||data.fields.indexOf(a.field)-data.fields.indexOf(b.field));}
-const api={PATTERNS,LABELS,norm,buildData,compositions,representatives,matches,search,islands};if(typeof module!=='undefined')module.exports=api;else root.SleepCore=api;
+function islandRanking(data,filters,status,excluded,detailed=false){
+ const totals=islands(data,filters,status,excluded),sleeps=['うとうと','すやすや','ぐっすり'],referenceFields=['ワカクサ本島','ワカクサ本島EX'];
+ const rows=detailed?totals.flatMap(r=>r.details.filter(d=>!filters.sleep||d.sleep===filters.sleep).map(d=>({field:r.field,...d}))):totals;
+ const score=(a,b)=>b.counts.priority-a.counts.priority||b.counts.future-a.counts.future||b.counts.temp-a.counts.temp;
+ const ranked=rows.filter(r=>!referenceFields.includes(r.field)).sort((a,b)=>score(a,b)||data.fields.indexOf(a.field)-data.fields.indexOf(b.field)||sleeps.indexOf(a.sleep)-sleeps.indexOf(b.sleep));
+ const reference=rows.filter(r=>referenceFields.includes(r.field)).sort((a,b)=>referenceFields.indexOf(a.field)-referenceFields.indexOf(b.field)||sleeps.indexOf(a.sleep)-sleeps.indexOf(b.sleep));
+ return {ranked,reference};
+}
+const api={PATTERNS,LABELS,norm,buildData,compositions,representatives,matches,search,islands,islandRanking};if(typeof module!=='undefined')module.exports=api;else root.SleepCore=api;
 })(typeof window==='undefined'?globalThis:window);
