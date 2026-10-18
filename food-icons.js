@@ -1,0 +1,21 @@
+window.SLEEP_ICONS = {
+  "マメミート": "icons/5db637a7-03fc-4bf7-a74f-d6d972a2f5d7.jfif",
+  "とくせんエッグ": "icons/057ede53-1179-4845-802b-52ced01e53a7.jfif",
+  "あったかジンジャー": "icons/b8cb9e36-e105-49eb-8d48-b7ad9b884cc7.jfif",
+  "あじわいキノコ": "icons/83293e36-67cb-4df6-b41a-15a8ee0f686f.jfif",
+  "あんみんトマト": "icons/5546f02b-22cc-4dec-acda-0b781d31b795.jfif",
+  "リラックスカカオ": "icons/1d761af8-27fb-456e-a587-8b34842db62c.jfif",
+  "ピュアなオイル": "icons/236abba7-3007-4ca9-8e9d-f778cd106b31.jfif",
+  "ワカクサ大豆": "icons/3dd0d7f1-d64a-4267-8358-ce413fd44880.jfif",
+  "あまいミツ": "icons/64619b0c-4f1e-40e0-bcfa-3ae67b4fd931.jfif",
+  "ふといながねぎ": "icons/94125dde-00f6-4e3c-b3bb-e9ca319002d6.jfif",
+  "ほっこりポテト": "icons/c0973765-f66c-4af2-8bc3-414a79177d8b.jfif",
+  "ワカクサコーン": "icons/49dc0942-2738-4792-b606-7d8e06c23d90.jfif",
+  "めざましコーヒー": "icons/37e78280-e58e-4d26-ae0b-57211b502b7a.jfif",
+  "げきからハーブ": "icons/a9e096ac-1a41-4794-8232-ea89a69dac26.jfif",
+  "ずっしりカボチャ": "icons/3ffba804-bf44-4df5-8c6c-1f306d4690ce.jfif",
+  "つやつやアボカド": "icons/dd908298-10ec-4db5-ac6c-3f05a34fe4ae.jfif",
+  "モーモーミルク": "icons/8ad97828-6274-48f1-9e2e-b144641d9169.jfif",
+  "とくせんリンゴ": "icons/4fe023af-0079-4fd3-9f43-ca4b0db52427.jfif",
+  "おいしいシッポ": "icons/54858713-026d-4261-8b1b-ec731ad1aa28.jfif"
+};
