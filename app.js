@@ -1,0 +1,48 @@
+'use strict';
+const C=SleepCore,D=window.SLEEP_DATA,$=id=>document.getElementById(id),KEY='sleepRoadmapV3';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const defaults=()=>({version:1,status:Object.fromEntries(D.ingredients.map(f=>[f,'future'])),excluded:[],order:[...D.ingredients],filters:{q:'',foods:[],patterns:[...C.PATTERNS],status:'',field:'',sleep:''},detailed:false,tab:'pokemon'});
+function validate(raw){
+ if(!raw||raw.version!==1||typeof raw.status!=='object'||!Array.isArray(raw.excluded)||!raw.filters)throw Error('対応するバックアップ形式ではありません。');
+ let s=defaults();for(let f of D.ingredients)if(Object.hasOwn(raw.status,f)){if(!C.LABELS[raw.status[f]])throw Error('厳選状況が不正です。');s.status[f]=raw.status[f];}
+ if(raw.excluded.some(id=>typeof id!=='string')||!Array.isArray(raw.filters.foods)||!Array.isArray(raw.filters.patterns))throw Error('バックアップの内容が不正です。');
+ s.excluded=[...new Set(raw.excluded.filter(id=>D.pokemon.some(p=>p.id===id)))];s.order=[...new Set([...(Array.isArray(raw.order)?raw.order:[]).filter(f=>D.ingredients.includes(f)),...D.ingredients])];
+ s.filters={q:String(raw.filters.q||'').slice(0,100),foods:raw.filters.foods.filter(f=>D.ingredients.includes(f)),patterns:raw.filters.patterns.filter(p=>C.PATTERNS.includes(p)),status:C.LABELS[raw.filters.status]?raw.filters.status:'',field:D.fields.includes(raw.filters.field)?raw.filters.field:'',sleep:['うとうと','すやすや','ぐっすり'].includes(raw.filters.sleep)?raw.filters.sleep:''};s.detailed=raw.detailed===true;s.tab=raw.tab==='island'?'island':'pokemon';return s;
+}
+let state=defaults(),storageWorks=true,pending=null;
+try{const raw=localStorage.getItem(KEY);if(raw)state=validate(JSON.parse(raw));else{const old=JSON.parse(localStorage.getItem('sleepFoodStatusV2')||'{}');const map={sausage:'マメミート',egg:'とくせんエッグ',ginger:'あったかジンジャー',mushroom:'あじわいキノコ',tomato:'あんみんトマト',cacao:'リラックスカカオ',oil:'ピュアなオイル',soy:'ワカクサ大豆',honey:'あまいミツ',leek:'ふといながねぎ',potato:'ほっこりポテト',corn:'ワカクサコーン',coffee:'めざましコーヒー',herb:'げきからハーブ',pumpkin:'ずっしりカボチャ',avocado:'つやつやアボカド',milk:'モーモーミルク',apple:'とくせんリンゴ',tail:'おいしいシッポ'};for(let [id,f] of Object.entries(map))if(C.LABELS[old[id]]&&D.ingredients.includes(f))state.status[f]=old[id];if(Object.keys(old).length)$('notice').textContent='旧版の食材の厳選状況を引き継ぎました。除外候補は新しい単位で設定してください。';}}catch(e){storageWorks=false;$('notice').textContent='保存データを読み取れませんでした。現在は初期状態で表示しています。バックアップがあれば読み込んでください。';}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));storageWorks=true;}catch(e){storageWorks=false;}$('saveState').textContent=storageWorks?'このブラウザーに自動保存しています。':'ブラウザー保存が使えません。終了前にバックアップを書き出してください。';}
+function controls(){for(let id of ['status','field','sleep'])$(id).value=state.filters[id];$('query').value=state.filters.q;}
+for(let [v,l] of Object.entries(C.LABELS))$('status').add(new Option(l,v));for(let f of D.fields)$('field').add(new Option(f,f));$('updated').textContent=D.updated;
+function renderFilters(){
+ $('patterns').innerHTML=C.PATTERNS.map(p=>`<button data-pattern="${p}" aria-pressed="${state.filters.patterns.includes(p)}">${p}</button>`).join('');
+ $('foods').innerHTML=state.order.map((f,i)=>`<button data-food="${i}" aria-pressed="${state.filters.foods.includes(f)}">${esc(f)}</button>`).join('');
+ $('statusSummary').textContent='最優先 '+D.ingredients.filter(f=>state.status[f]==='priority').length;
+ $('foodStatuses').innerHTML=state.order.map((f,i)=>`<div class="status-row"><label for="food-status-${i}">${esc(f)}</label><select id="food-status-${i}" data-food-status="${i}" class="${state.status[f]}">${Object.entries(C.LABELS).map(([v,l])=>`<option value="${v}" ${state.status[f]===v?'selected':''}>${l}</option>`).join('')}</select><div class="move"><button data-move="${i}" data-dir="-1" aria-label="${esc(f)}を上に" ${i===0?'disabled':''}>↑</button><button data-move="${i}" data-dir="1" aria-label="${esc(f)}を下に" ${i===state.order.length-1?'disabled':''}>↓</button></div></div>`).join('');
+}
+const hit=f=>(!state.filters.foods.length||state.filters.foods.includes(f))&&(!state.filters.status||state.status[f]===state.filters.status);
+function card(p){return `<article class="card"><div class="card-top"><h3>${esc(p.display)}</h3><span class="sleep-label">${p.sleep}</span></div><div class="field-list">${p.shownFields.map(f=>`<button data-field="${esc(f)}">${esc(f)}</button>`).join('')}</div><div class="level-head"><span></span><span>Lv.1</span><span>Lv.30</span><span>Lv.60</span></div>${p.compositions.map(c=>`<div class="composition"><b>${c.pattern}</b>${c.foods.map(f=>`<span class="food-slot ${hit(f)?'hit':''}">${esc(f)}</span>`).join('')}</div>`).join('')}<div class="card-bottom"><button data-exclude="${esc(p.id)}" aria-label="${esc(p.display)}を候補から外す">候補から外す</button></div></article>`;}
+function metrics(counts){return `<div class="count-grid">${['priority','future','temp'].map(s=>`<div class="metric ${s}"><b>${counts[s]}</b><span>${C.LABELS[s]}</span></div>`).join('')}</div>`;}
+function names(list){return list.length?`<ul>${list.map(p=>`<li>${esc(p.display)} <span class="hint">${p.compositions.map(c=>c.pattern).join(' / ')}</span></li>`).join('')}</ul>`:'<p class="hint">該当する候補なし</p>';}
+function renderResults(){let list=C.search(D,state.filters,state.status,state.excluded),rows=C.islands(D,state.filters,state.status,state.excluded);
+ $('pokemonCount').textContent=list.length;$('cards').innerHTML=list.map(card).join('')||'<p class="empty">条件に合う候補がありません。<br>食材構成や絞り込み、除外設定を確認してください。</p>';
+ $('islandCards').innerHTML=rows.map((r,i)=>`<article class="island-card"><div class="island-rank">ISLAND ${String(i+1).padStart(2,'0')}</div><h3>${esc(r.field)}</h3><p class="hint">候補 ${r.pokemon.length}種類</p>${metrics(r.counts)}${state.detailed?r.details.map(d=>`<section class="sleep-detail"><h4>${d.sleep} <span class="hint">${d.pokemon.length}種類</span></h4>${metrics(d.counts)}<details><summary>候補ポケモンを見る</summary>${names(d.pokemon)}</details></section>`).join(''):`<details><summary>候補ポケモンを見る</summary>${names(r.pokemon)}</details>`}</article>`).join('')||'<p class="empty">条件に合う島がありません。</p>';
+ $('results').hidden=state.tab!=='pokemon';$('islands').hidden=state.tab!=='island';$('pokemonTab').setAttribute('aria-pressed',state.tab==='pokemon');$('islandTab').setAttribute('aria-pressed',state.tab==='island');$('detailToggle').setAttribute('aria-pressed',state.detailed);$('detailToggle').textContent=state.detailed?'島全体の表示に戻す':'睡眠タイプ別の詳細';
+ $('excludedCount').textContent=state.excluded.length+'種類';$('excludedList').innerHTML=state.excluded.map(id=>{let p=D.pokemon.find(p=>p.id===id);return `<div class="excluded-row"><span>${esc(p.display)}</span><button data-restore="${esc(id)}">候補に戻す</button></div>`;}).join('')||'<p class="hint">除外したポケモンはありません。</p>';$('restoreAll').disabled=!state.excluded.length;save();
+}
+function render(){renderFilters();renderResults();}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;let d=b.dataset;
+ if(d.pattern){let a=state.filters.patterns;state.filters.patterns=a.includes(d.pattern)?a.filter(x=>x!==d.pattern):[...a,d.pattern];render();}
+ if(d.food!==undefined){let f=state.order[+d.food],a=state.filters.foods;state.filters.foods=a.includes(f)?a.filter(x=>x!==f):[...a,f];render();}
+ if(d.exclude){state.excluded.push(d.exclude);renderResults();$('notice').textContent=D.pokemon.find(p=>p.id===d.exclude).display+'を除外しました。「除外したポケモン」から戻せます。';}
+ if(d.restore){state.excluded=state.excluded.filter(x=>x!==d.restore);renderResults();}
+ if(d.field){state.filters.field=d.field;controls();renderResults();}
+ if(d.move!==undefined){let i=+d.move,j=i+ +d.dir;if(j>=0&&j<state.order.length){[state.order[i],state.order[j]]=[state.order[j],state.order[i]];render();}}
+});
+$('foodStatuses').addEventListener('change',e=>{let i=e.target.dataset.foodStatus;if(i===undefined)return;state.status[state.order[+i]]=e.target.value;e.target.className=e.target.value;$('statusSummary').textContent='最優先 '+D.ingredients.filter(f=>state.status[f]==='priority').length;renderResults();});
+for(let id of ['status','field','sleep'])$(id).addEventListener('change',()=>{state.filters[id]=$(id).value;renderResults();});$('query').addEventListener('input',()=>{state.filters.q=$('query').value;renderResults();});
+$('clear').onclick=()=>{state.filters=defaults().filters;controls();render();};$('allPatterns').onclick=()=>{state.filters.patterns=[...C.PATTERNS];render();};$('restoreAll').onclick=()=>{state.excluded=[];renderResults();};$('detailToggle').onclick=()=>{state.detailed=!state.detailed;renderResults();};$('pokemonTab').onclick=()=>{state.tab='pokemon';renderResults();};$('islandTab').onclick=()=>{state.tab='island';renderResults();};
+function download(name,text,type){let url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+$('export').onclick=()=>download('ポケスリ-バックアップ-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({app:'sleep-roadmap',...state},null,2),'application/json');
+$('import').onchange=async e=>{try{let file=e.target.files[0];if(!file)return;if(file.size>1000000)throw Error('ファイルが大きすぎます。');let raw=JSON.parse(await file.text());if(raw.app!=='sleep-roadmap')throw Error('このアプリのバックアップではありません。');pending=validate(raw);$('confirmImport').showModal();}catch(err){$('notice').textContent='読み込めませんでした：'+err.message;}finally{e.target.value='';}};
+$('cancelImport').onclick=()=>{pending=null;$('confirmImport').close();};$('applyImport').onclick=()=>{if(!pending)return;state=pending;pending=null;controls();render();$('confirmImport').close();$('notice').textContent='バックアップを読み込みました。';};controls();render();
