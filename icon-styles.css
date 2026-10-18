@@ -1,8 +1,9 @@
 /* Readable original artwork, with no duplicate ingredient captions. */
 .food-icon{display:block;flex:0 0 auto;object-fit:contain;border-radius:6px;background:#fff;width:76px;height:90px}
 .food-fallback{font-size:11px;padding:8px;color:var(--muted)}
-#foods{display:grid;grid-template-rows:repeat(2,100px);grid-auto-flow:column;grid-auto-columns:84px;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding:2px 2px 8px;scrollbar-width:thin;scrollbar-color:#97af9e #ecf1e9}
-#foods button{padding:3px;border-radius:10px;min-width:0;scroll-snap-align:start;border-width:2px;position:relative}
+#foods{display:grid;grid-template-rows:repeat(2,76px);grid-auto-flow:column;grid-auto-columns:64px;gap:5px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding:2px 2px 8px;scrollbar-width:thin;scrollbar-color:#97af9e #ecf1e9}
+#foods .food-icon{width:56px;height:66px}
+#foods button{padding:2px;border-radius:10px;min-width:0;scroll-snap-align:start;border-width:2px;position:relative}
 #foods button[aria-pressed=true]{background:#e0eee2;border-color:var(--green);box-shadow:inset 0 0 0 1px var(--green)}
 #foods button[aria-pressed=true]::after{content:'✓';position:absolute;top:1px;right:3px;background:var(--green);color:white;font-size:11px;border-radius:50%;width:16px;height:16px;line-height:16px}
 .status-row{grid-template-columns:84px minmax(112px,1fr) 64px;padding:5px 0;gap:8px}
@@ -10,11 +11,11 @@
 .status-row label .food-icon{width:64px;height:76px}
 .status-row label span:not(.food-fallback){display:none}
 .food-sources{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:0 10px 10px}
-.food-source{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;background:#f3f5f0;border:1px solid #e8ece4;border-radius:9px;padding:4px 2px;min-width:0;text-align:center;overflow:hidden}
-.food-source b{font-size:11px;color:var(--muted);line-height:1.2;align-self:flex-start;padding-left:3px}
+.food-source{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;background:#f3f5f0;border:1px solid #e8ece4;border-radius:9px;padding:3px 2px;min-width:0;text-align:center;overflow:hidden}
+.food-source b{font-size:11px;color:var(--muted);line-height:1.2;align-self:center;padding-left:0}
 .food-source.hit{background:#e0eee2;border-color:#b6d7bf;color:#174d40}
 .food-source.hit b{color:#174d40}
-.food-source .food-icon{width:80px;height:94px;max-width:100%}
+.food-source .food-icon{width:60px;height:71px;max-width:100%}
 .card-top{padding:8px 10px;align-items:center;gap:6px}
 .card-top h3{font-size:16px;flex:1}
 .exclude-compact{font-size:11px;padding:5px 9px;min-height:38px;color:#8a4c4c;border-color:#ebd9d9;flex-shrink:0}
@@ -46,6 +47,6 @@ main{padding-top:12px}
 .tabs{margin:12px 0 10px}
 #results>.hint{font-size:11px;margin-bottom:8px}
 #results>.section-heading{margin-bottom:3px}
-@media(min-width:900px){#foods{grid-template-rows:100px}.status-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:680px){.shell{padding-left:10px;padding-right:10px}.panel{padding:12px}.settings{padding:9px 12px}.status-row{grid-template-columns:76px minmax(110px,1fr) 64px}.status-row label{flex-direction:row;align-items:center}.filters .section-heading h2{font-size:15px}.filters legend small{font-size:10px;margin-left:4px}.food-source .food-icon{width:80px;height:94px}}
-@media(max-width:350px){#foods{grid-auto-columns:78px}.food-source .food-icon{width:72px;height:85px}.card-top h3{font-size:14px}.sleep-label{font-size:10px;padding:3px 5px}.status-row{grid-template-columns:64px minmax(96px,1fr) 62px;gap:5px}}
+@media(min-width:900px){#foods{grid-template-rows:76px}.status-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.shell{padding-left:10px;padding-right:10px}.panel{padding:12px}.settings{padding:9px 12px}.status-row{grid-template-columns:76px minmax(110px,1fr) 64px}.status-row label{flex-direction:row;align-items:center}.filters .section-heading h2{font-size:15px}.filters legend small{font-size:10px;margin-left:4px}.food-source .food-icon{width:60px;height:71px}}
+@media(max-width:350px){#foods{grid-auto-columns:64px}.food-source .food-icon{width:54px;height:64px}.card-top h3{font-size:14px}.sleep-label{font-size:10px;padding:3px 5px}.status-row{grid-template-columns:64px minmax(96px,1fr) 62px;gap:5px}}
